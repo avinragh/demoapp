@@ -1,0 +1,5 @@
+*.log
+*.swp
+openapi-server-config.yaml
+.build
+.vscode

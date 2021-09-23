@@ -1,0 +1,5 @@
+output:
+  db/models.go
+package: db
+generate:
+  - types

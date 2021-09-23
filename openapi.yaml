@@ -1,0 +1,549 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Upcloud Demo App
+  description: A sample API that builds Alarms
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Avinash Raghunathan
+    email: avinragh@gmail.com
+    url: https://github.com/avinragh
+servers:
+  - url: http://demoapp.io/api
+paths:
+  /Accounts:
+    get:
+      description: |
+        Returns all Accounts that the user has access to
+      operationId: findAccounts
+      parameters:
+        - name: username
+          in: query
+          description: Username of the account
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      description: Creates a new Account in the store
+      operationId: addAccounts
+      requestBody:
+        description: Account to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: accounts response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /Accounts/{id}:
+    get:
+      description: Returns a Account based on a single id
+      operationId: find Account by id
+      parameters:
+        - name: id
+          in: path
+          description: id of the account to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new Server in the store
+      operationId: add Account by id
+      parameters:
+        - name: id
+          in: path
+          description: id of the account to fetch
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        description: Account to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
+      responses:
+        '200':
+          description: account response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      description: deletes a single Account based on the id supplied
+      operationId: deleteAccount
+      parameters:
+        - name: id
+          in: path
+          description: id of Account to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Account deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /Servers:
+    get:
+      description: |
+        Returns all Servers that the user has access to
+      operationId: find Servers
+      parameters:
+        - name: accountId
+          in: query
+          description: Id of the accoun the servers are part of
+          required: false
+          style: form
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Server Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Server'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      description: Creates a new Servers in the store.
+      operationId: addServers
+      requestBody:
+        description: Server to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              item:
+                $ref: '#/components/schemas/Server'
+      responses:
+        '200':
+          description: List Server response
+          content:
+            application/json:
+              schema:
+                type: array
+                item:
+                  $ref: '#/components/schemas/Server'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /Servers/{id}:
+    get:
+      description: Returns a Server based on a single id
+      operationId: find Server by id
+      parameters:
+        - name: id
+          in: path
+          description: id of the server to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Server response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      description: Creates a new Server in the store.
+      operationId: addServer
+      parameters:
+        - name: id
+          in: path
+          description: Id of the Server
+          required: true
+          style: form
+          schema:
+            type: string
+
+      requestBody:
+        description: Server to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Server'
+      responses:
+        '200':
+          description: Server response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
+    delete:
+      description: deletes a single Server based on the uuid supplied
+      operationId: deleteServer
+      parameters:
+        - name: id
+          in: path
+          description: uuid of Server to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Server deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /Alarms:
+    get:
+      description: |
+        Returns all Servers that the user has access to
+      operationId: find Alarms
+      parameters:
+        - name: alarmType
+          in: query
+          description: type of the alarm
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: resourceId
+          in: query
+          description: uuid of the associated resource
+          required: false
+          style: form
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Alarm Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alarm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      description: Creates new Alarms in the store.
+      operationId: addAlarms
+      requestBody:
+        description: Alarms to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              item:
+                $ref: '#/components/schemas/Alarm'
+      responses:
+        '200':
+          description: List Alarms response
+          content:
+            application/json:
+              schema:
+                type: array
+                item:
+                  $ref: '#/components/schemas/Alarm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /Alarms/{id}:
+    get:
+      description: Returns a Alarm based on a single id
+      operationId: find Alarm by id
+      parameters:
+        - name: id
+          in: path
+          description: id of the alarm to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Alarm response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alarm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    post:
+      description: Creates a new Alarm in the store.
+      operationId: addAlarm
+      parameters:
+        - name: id
+          in: path
+          description: Id of the Alarm
+          required: true
+          style: form
+          schema:
+            type: string
+
+      requestBody:
+        description: Alarm to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alarm'
+      responses:
+        '200':
+          description: Alarm response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alarm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
+    delete:
+      description: deletes a single Alarm based on the id supplied
+      operationId: deleteAlarm
+      parameters:
+        - name: id
+          in: path
+          description: uuid of Server to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Alarm deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+  schemas:
+    Account:
+      type: object
+      required:
+        - username
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password: 
+          type: string
+        credits:
+          type: number
+          format: double
+        alarmInfo:
+          $ref: '#/components/schemas/AccountAlarmInfo'
+        createdOn:
+          type: integer
+          format: int32
+        modifiedOn:
+          type: integer
+          format: int32
+
+    AccountAlarmInfo:
+      type: object
+      properties:
+        isCreditLow: 
+          type: boolean
+        isMaxNumberOfServers:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    Server:
+      type: object
+      required:
+        - uuid
+        - accountId
+      properties:
+        id:
+          type: string
+        uuid:
+          type: string
+        accountId:
+          type: string
+        coreNumber:
+          type: string
+        serverCreationTime: 
+          type: integer
+          format: int32
+        hostname:
+          type: string
+        license:
+          type: integer
+          format: int32
+        memoryAmount:
+          type: string
+        plan:
+          type: string
+        planIpV4Bytes:
+          type: string
+        planIpV6Bytes:
+          type: string
+        state: 
+          type: string
+        tags:
+          $ref: '#/components/schemas/Tags'
+        title:
+          type: string
+        zone:
+          type: string
+        alarmInfo:
+          $ref: '#/components/schemas/ServerAlarmInfo'         
+        createdOn:
+          type: integer
+          format: int64
+        modifiedOn:
+          type: integer
+          format: int64
+
+    ServerAlarmInfo:
+      type: object
+      properties:
+        isPoweredOff:
+          type: boolean
+        isErrored:
+          type: boolean
+
+    Tags:
+      type: object
+      properties:
+        tag:
+          type: array
+          items:
+            type: string
+    
+    Alarm:
+      type: object
+      required:
+        - name
+        - alarmType
+        - resourceId
+      properties: 
+        id:
+          type: string
+        name:
+          type: string
+        alarmType:
+          type: string
+        resourceId:
+          type: string
