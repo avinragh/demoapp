@@ -173,7 +173,16 @@ func (siw *ServerInterfaceWrapper) FindAlarms(w http.ResponseWriter, r *http.Req
 		logger.Printf("%v", paramValue)
 	}
 
-	alarms, err = database.FindAlarms(params.AlarmType, params.ResourceId)
+	err = runtime.BindQueryParameter("form", true, false, "name", r.URL.Query(), &params.Name)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter resourceId: %s", err), http.StatusBadRequest)
+		return
+	}
+	if paramValue := r.URL.Query().Get("name"); paramValue != "" {
+		logger.Printf("%v", paramValue)
+	}
+
+	alarms, err = database.FindAlarms(params.AlarmType, params.ResourceId, params.Name)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Cannot get Alarms: %s", err), http.StatusBadRequest)
 		return

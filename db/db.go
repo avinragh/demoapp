@@ -34,6 +34,16 @@ func (db *DB) Init() (*DB, error) {
 						Unique:  true,
 						Indexer: &memdb.StringFieldIndex{Field: "Id"},
 					},
+					"queryIndex": &memdb.IndexSchema{
+						Name:    "queryIndex",
+						Unique:  false,
+						Indexer: &memdb.StringFieldIndex{Field: "AccountId"},
+					},
+					"uuid": &memdb.IndexSchema{
+						Name:    "uuid",
+						Unique:  false,
+						Indexer: &memdb.StringFieldIndex{Field: "Uuid"},
+					},
 				},
 			},
 			"alarm": &memdb.TableSchema{
@@ -43,6 +53,21 @@ func (db *DB) Init() (*DB, error) {
 						Name:    "id",
 						Unique:  true,
 						Indexer: &memdb.StringFieldIndex{Field: "Id"},
+					},
+					"alarmType": &memdb.IndexSchema{
+						Name:    "alarmType",
+						Unique:  true,
+						Indexer: &memdb.StringFieldIndex{Field: "AlarmType"},
+					},
+					"resourceId": &memdb.IndexSchema{
+						Name:    "resourceId",
+						Unique:  true,
+						Indexer: &memdb.StringFieldIndex{Field: "ResourceId"},
+					},
+					"name": &memdb.IndexSchema{
+						Name:    "name",
+						Unique:  true,
+						Indexer: &memdb.StringFieldIndex{Field: "Name"},
 					},
 				},
 			},

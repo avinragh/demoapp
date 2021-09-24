@@ -18,30 +18,16 @@ func ScheduleExecuteAlarms(ctx *context.Context) {
 	logger := ctx.GetLogger()
 	executeAlarmsInterval := util.GetEnvAsIntOrDefault(ExecuteAlarmInterval, 2)
 	wg.Add(1)
-	quit := make(chan bool, 1)
-
-	go func(ctx *context.Context) {
+	go func(ctx *context.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
-
-		err := UpdateAlarms(ctx)
-		if err != nil {
-			logger.Printf("Error scheduling UpdateAlarms: %s", err)
-		}
-
-		for {
-			select {
-			case <-quit:
-				return
-			case <-time.After(time.Duration(executeAlarmsInterval) * time.Minute):
-				defer wg.Done()
-
-				err := UpdateResources(ctx)
-				if err != nil {
-					logger.Printf("Error scheduling UpdateAlarms: %s", err)
-				}
+		c := time.Tick(time.Duration(executeAlarmsInterval) * time.Minute)
+		for range c {
+			err := ExecuteAlarms(ctx)
+			if err != nil {
+				logger.Printf("Error scheduling UpdateAlarms: %s", err)
 			}
 		}
-	}(ctx)
+	}(ctx, &wg)
 	wg.Wait()
 
 }
@@ -57,7 +43,7 @@ func ExecuteAlarms(ctx *context.Context) error {
 
 		for _, account := range accounts {
 			if account != nil && account.Id != nil {
-				servers, err := database.FindServers(account.Id)
+				servers, err := database.FindServers(account.Id, nil)
 				if err != nil {
 					return err
 				}

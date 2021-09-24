@@ -155,6 +155,13 @@ paths:
           style: form
           schema:
             type: string
+        - name: uuid
+          in: query
+          description: uuid of server 
+          required: false
+          style: form
+          schema:
+            type: string
 
       responses:
         '200':
@@ -293,6 +300,13 @@ paths:
           schema:
             type: string
         - name: resourceId
+          in: query
+          description: uuid of the associated resource
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: name
           in: query
           description: uuid of the associated resource
           required: false
@@ -440,6 +454,8 @@ components:
         credits:
           type: number
           format: double
+        resourceLimits:
+          $ref: '#/components/schemas/ResourceLimits'                   
         alarmInfo:
           $ref: '#/components/schemas/AccountAlarmInfo'
         createdOn:
@@ -448,6 +464,36 @@ components:
         modifiedOn:
           type: integer
           format: int32
+ 
+
+    ResourceLimits:
+      type: object
+      properties:
+        cores:
+          type: integer
+          format: int32
+        memory:
+          type: integer
+          format: int32  
+        networks:
+          type: integer
+          format: int32
+        publicIpv4:
+          type: integer
+          format: int32
+        publicIpv6:
+          type: integer
+          format: int32
+        storageHdd:
+          type: integer
+          format: int32
+        storageMaxiops:
+          type: integer
+          format: int32
+        storageSsd:
+          type: integer
+          format: int32
+
 
     AccountAlarmInfo:
       type: object

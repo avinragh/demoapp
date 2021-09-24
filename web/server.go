@@ -160,7 +160,17 @@ func (siw *ServerInterfaceWrapper) FindServers(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	servers, err = database.FindServers(params.AccountId)
+	if paramValue := r.URL.Query().Get("uuid"); paramValue != "" {
+		logger.Printf("%v", paramValue)
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "uuid", r.URL.Query(), &params.AccountId)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter username: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	servers, err = database.FindServers(params.AccountId, params.Uuid)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid format for parameter username: %s", err), http.StatusBadRequest)
 		return

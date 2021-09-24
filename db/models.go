@@ -5,13 +5,14 @@ package db
 
 // Account defines model for Account.
 type Account struct {
-	AlarmInfo  *AccountAlarmInfo `json:"alarmInfo,omitempty"`
-	CreatedOn  *int32            `json:"createdOn,omitempty"`
-	Credits    *float64          `json:"credits,omitempty"`
-	Id         *string           `json:"id,omitempty"`
-	ModifiedOn *int32            `json:"modifiedOn,omitempty"`
-	Password   *string           `json:"password,omitempty"`
-	Username   string            `json:"username"`
+	AlarmInfo      *AccountAlarmInfo `json:"alarmInfo,omitempty"`
+	CreatedOn      *int32            `json:"createdOn,omitempty"`
+	Credits        *float64          `json:"credits,omitempty"`
+	Id             *string           `json:"id,omitempty"`
+	ModifiedOn     *int32            `json:"modifiedOn,omitempty"`
+	Password       *string           `json:"password,omitempty"`
+	ResourceLimits *ResourceLimits   `json:"resourceLimits,omitempty"`
+	Username       string            `json:"username"`
 }
 
 // AccountAlarmInfo defines model for AccountAlarmInfo.
@@ -32,6 +33,18 @@ type Alarm struct {
 type Error struct {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
+}
+
+// ResourceLimits defines model for ResourceLimits.
+type ResourceLimits struct {
+	Cores          *int32 `json:"cores,omitempty"`
+	Memory         *int32 `json:"memory,omitempty"`
+	Networks       *int32 `json:"networks,omitempty"`
+	PublicIpv4     *int32 `json:"publicIpv4,omitempty"`
+	PublicIpv6     *int32 `json:"publicIpv6,omitempty"`
+	StorageHdd     *int32 `json:"storageHdd,omitempty"`
+	StorageMaxiops *int32 `json:"storageMaxiops,omitempty"`
+	StorageSsd     *int32 `json:"storageSsd,omitempty"`
 }
 
 // Server defines model for Server.
@@ -86,6 +99,9 @@ type FindAlarmsParams struct {
 
 	// uuid of the associated resource
 	ResourceId *string `json:"resourceId,omitempty"`
+
+	// uuid of the associated resource
+	Name *string `json:"name,omitempty"`
 }
 
 // AddAlarmsJSONBody defines parameters for AddAlarms.
@@ -98,6 +114,9 @@ type AddAlarmJSONBody Alarm
 type FindServersParams struct {
 	// Id of the accoun the servers are part of
 	AccountId *string `json:"accountId,omitempty"`
+
+	// uuid of server
+	Uuid *string `json:"uuid,omitempty"`
 }
 
 // AddServersJSONBody defines parameters for AddServers.

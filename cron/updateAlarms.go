@@ -49,7 +49,7 @@ func UpdateAlarms(ctx *context.Context) error {
 	addAlarms := []*db.Alarm{}
 	for _, account := range accounts {
 		if account.AlarmInfo != nil {
-			accountAlarms, err := database.FindAlarms(&accountAlarmType, account.Id)
+			accountAlarms, err := database.FindAlarms(&accountAlarmType, account.Id, nil)
 			if err != nil {
 				return err
 			}
@@ -92,12 +92,12 @@ func UpdateAlarms(ctx *context.Context) error {
 				}
 			}
 		}
-		servers, err := database.FindServers(account.Id)
+		servers, err := database.FindServers(account.Id, nil)
 		if err != nil {
 			return err
 		}
 		for _, server := range servers {
-			serverAlarms, err := database.FindAlarms(&ServerAlarmType, account.Id)
+			serverAlarms, err := database.FindAlarms(&ServerAlarmType, account.Id, nil)
 			if err != nil {
 				return err
 			}

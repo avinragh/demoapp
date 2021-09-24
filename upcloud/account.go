@@ -64,9 +64,20 @@ func GetAccount(ctx *context.Context, account *db.Account) (*db.Account, error) 
 		credits := 0.0
 		account.Credits = &credits
 	}
-	if *account.Credits != accountAPIResponse.Account.Credits {
+	if accountAPIResponse.Account.Credits != 0 && account.Credits != nil && *account.Credits != accountAPIResponse.Account.Credits {
 		account.Credits = &accountAPIResponse.Account.Credits
-
 	}
+
+	resourceLimits := &db.ResourceLimits{}
+	resourceLimits.Cores = &accountAPIResponse.Account.ResourceLimits.Cores
+	resourceLimits.Memory = &accountAPIResponse.Account.ResourceLimits.Memory
+	resourceLimits.Networks = &accountAPIResponse.Account.ResourceLimits.Networks
+	resourceLimits.PublicIpv4 = &accountAPIResponse.Account.ResourceLimits.PublicIpv4
+	resourceLimits.PublicIpv6 = &accountAPIResponse.Account.ResourceLimits.PublicIpv6
+	resourceLimits.StorageHdd = &accountAPIResponse.Account.ResourceLimits.StorageHdd
+	resourceLimits.StorageMaxiops = &accountAPIResponse.Account.ResourceLimits.StorageMaxiops
+	resourceLimits.StorageSsd = &accountAPIResponse.Account.ResourceLimits.StorageSsd
+	account.ResourceLimits = resourceLimits
+
 	return account, nil
 }

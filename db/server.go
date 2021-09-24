@@ -15,28 +15,29 @@ func (db *DB) FindServerById(id string) (*Server, error) {
 	return server, nil
 }
 
-func (db *DB) FindServers(accountId *string) ([]*Server, error) {
+func (db *DB) FindServers(accountId *string, uuid *string) ([]*Server, error) {
 
 	servers := []*Server{}
 	txn := db.MemDB.Txn(false)
 	defer txn.Abort()
 
-	if accountId != nil {
-		it, err := txn.Get("server", "id", "accountId", accountId)
-		if err != nil {
-			return nil, err
-		}
-		for obj := it.Next(); obj != nil; obj = it.Next() {
-			server := obj.(*Server)
-			servers = append(servers, server)
-		}
-	} else {
-		it, err := txn.Get("server", "id")
-		if err != nil {
-			return nil, err
-		}
-		for obj := it.Next(); obj != nil; obj = it.Next() {
-			server := obj.(*Server)
+	it, err := txn.Get("server", "id")
+	if err != nil {
+		return nil, err
+	}
+	for obj := it.Next(); obj != nil; obj = it.Next() {
+		server := obj.(*Server)
+		if accountId != nil {
+			if uuid != nil {
+				if server.AccountId == *accountId && server.Uuid == *uuid {
+					servers = append(servers, server)
+				}
+			} else {
+				if server.AccountId == *accountId {
+					servers = append(servers, server)
+				}
+			}
+		} else {
 			servers = append(servers, server)
 		}
 	}

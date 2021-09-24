@@ -15,31 +15,43 @@ func (db *DB) FindAlarmById(id string) (*Alarm, error) {
 	return alarm, nil
 }
 
-func (db *DB) FindAlarms(alarmType, resourceId *string) ([]*Alarm, error) {
+func (db *DB) FindAlarms(alarmType, resourceId, name *string) ([]*Alarm, error) {
 
 	alarms := []*Alarm{}
 	txn := db.MemDB.Txn(false)
 	defer txn.Abort()
 
 	if alarmType != nil && resourceId != nil {
-		it, err := txn.Get("alarm", "id", "alarmType", alarmType, "resourceId", resourceId)
-		if err != nil {
-			return nil, err
-		}
-		for obj := it.Next(); obj != nil; obj = it.Next() {
-			alarm := obj.(*Alarm)
-			alarms = append(alarms, alarm)
-
-		}
-
-	} else {
 		it, err := txn.Get("alarm", "id")
 		if err != nil {
 			return nil, err
 		}
 		for obj := it.Next(); obj != nil; obj = it.Next() {
 			alarm := obj.(*Alarm)
-			alarms = append(alarms, alarm)
+			if alarmType != nil {
+				if resourceId != nil {
+					if name != nil {
+						if alarm.AlarmType == *alarmType && alarm.ResourceId == *resourceId && alarm.Name == *name {
+							alarms = append(alarms, alarm)
+						}
+					} else {
+						if alarm.AlarmType == *alarmType && alarm.ResourceId == *resourceId {
+							alarms = append(alarms, alarm)
+						}
+
+					}
+
+				} else {
+					if alarm.AlarmType == *alarmType {
+						alarms = append(alarms, alarm)
+					}
+
+				}
+
+			} else {
+				alarms = append(alarms, alarm)
+			}
+
 		}
 	}
 	return alarms, nil

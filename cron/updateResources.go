@@ -2,7 +2,6 @@ package cron
 
 import (
 	"demoapp/context"
-	"demoapp/db"
 	"demoapp/upcloud"
 	"demoapp/util"
 	"sync"
@@ -57,25 +56,21 @@ func UpdateResources(ctx *context.Context) error {
 			return err
 		}
 
-		dbServers, err := database.FindServers(account.Id)
-		if err != nil {
-			return err
-		}
-
-		updatedServers := []*db.Server{}
-		for _, server := range servers {
-			for _, dbServer := range dbServers {
-				updatedServer := server
-				if server.Uuid == dbServer.Uuid {
-					updatedServer.Id = dbServer.Id
-					updatedServers = append(updatedServers, updatedServer)
+		if servers != nil {
+			for _, server := range servers {
+				dbServers, err := database.FindServers(&server.AccountId, &server.Uuid)
+				if err != nil {
+					return err
+				}
+				if len(dbServers) > 0 {
+					server.Id = dbServers[0].Id
 				}
 			}
-		}
 
-		_, err = database.AddServers(updatedServers)
-		if err != nil {
-			return err
+			_, err = database.AddServers(servers)
+			if err != nil {
+				return err
+			}
 		}
 
 	}
