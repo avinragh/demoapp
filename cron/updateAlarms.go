@@ -44,104 +44,48 @@ func UpdateAlarms(ctx *context.Context) error {
 	}
 
 	accountAlarmType := AccountAlarmType
-	ServerAlarmType := ServerAlarmType
+	// ServerAlarmType := ServerAlarmType
 
 	addAlarms := []*db.Alarm{}
 	for _, account := range accounts {
-		if account.AlarmInfo != nil {
-			accountAlarms, err := database.FindAlarms(&accountAlarmType, account.Id, nil)
-			if err != nil {
-				return err
-			}
-
-			if len(accountAlarms) == 0 {
-				if *account.AlarmInfo.IsCreditLow {
-					alarm := &db.Alarm{}
-					alarm.Name = CreditLowAlarmName
-					alarm.AlarmType = AccountAlarmType
-					alarm.ResourceId = *account.Id
-					addAlarms = append(addAlarms, alarm)
-				}
-				if *account.AlarmInfo.IsMaxNumberOfServers {
-					alarm := &db.Alarm{}
-					alarm.Name = MaxNumberOfServersAlarmName
-					alarm.AlarmType = AccountAlarmType
-					alarm.ResourceId = *account.Id
-					addAlarms = append(addAlarms, alarm)
-				}
-			} else {
-				if !*account.AlarmInfo.IsCreditLow {
-					delId := *accountAlarms[0].Id
-					if delId != "" {
-						_, err := database.DeleteAlarm(delId)
-						if err != nil {
-							return err
-						}
+		if account.Id != nil {
+			if account.AlarmInfo != nil {
+				if account.AlarmInfo.IsCreditLow != nil {
+					creditLowAlarmName := CreditLowAlarmName
+					existingAlarms, err := database.FindAlarms(&accountAlarmType, account.Id, &creditLowAlarmName)
+					if err != nil {
+						return err
 					}
+					if *account.AlarmInfo.IsCreditLow {
+						if len(existingAlarms) == 0 || existingAlarms == nil {
+							alarm := &db.Alarm{}
+							alarm.Name = CreditLowAlarmName
+							alarm.AlarmType = AccountAlarmType
+							alarm.ResourceId = *account.Id
+							addAlarms = append(addAlarms, alarm)
 
-				}
-				if !*account.AlarmInfo.IsMaxNumberOfServers {
-					delId := *accountAlarms[0].Id
-					if delId != "" {
-						_, err := database.DeleteAlarm(delId)
-						if err != nil {
-							return err
+						}
+					} else {
+						if len(existingAlarms) > 0 && existingAlarms != nil {
+							delId := *existingAlarms[0].Id
+							if delId != "" {
+								_, err := database.DeleteAlarm(delId)
+								if err != nil {
+									return err
+								}
+							}
+
 						}
 
 					}
 				}
 			}
-		}
-		servers, err := database.FindServers(account.Id, nil)
-		if err != nil {
-			return err
-		}
-		for _, server := range servers {
-			serverAlarms, err := database.FindAlarms(&ServerAlarmType, account.Id, nil)
-			if err != nil {
-				return err
-			}
-			if len(servers) == 0 {
-				if *server.AlarmInfo.IsPoweredOff {
-					alarm := &db.Alarm{}
-					alarm.Name = IsPoweredOffAlarmName
-					alarm.AlarmType = ServerAlarmType
-					alarm.ResourceId = *server.Id
-					addAlarms = append(addAlarms, alarm)
-				}
-				if *server.AlarmInfo.IsErrored {
-					alarm := &db.Alarm{}
-					alarm.Name = IsErroredAlarmName
-					alarm.AlarmType = ServerAlarmType
-					alarm.ResourceId = *server.Id
-					addAlarms = append(addAlarms, alarm)
-				}
-			} else {
-				if !*server.AlarmInfo.IsPoweredOff {
-					delId := *serverAlarms[0].Id
-					if delId != "" {
-						_, err := database.DeleteAlarm(delId)
-						if err != nil {
-							return err
-						}
-					}
-				}
-				if !*server.AlarmInfo.IsErrored {
-					delId := *serverAlarms[0].Id
-					if delId != "" {
-						_, err := database.DeleteAlarm(delId)
-						if err != nil {
-							return err
-						}
 
-					}
-				}
-			}
 		}
 	}
-	if len(addAlarms) > 0 {
-		database.AddAlarms(addAlarms)
+	_, err = database.AddAlarms(addAlarms)
+	if err != nil {
+		return err
 	}
-
 	return nil
 }
